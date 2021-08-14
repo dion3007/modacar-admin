@@ -41,7 +41,7 @@ export default function AddEditCustomers() {
           setCustomers(newCustomers);
         });
     }
-  }, []);
+  }, [act]);
 
   const filteredCustomer = customers.filter((customer) => id === customer.idNumber);
 

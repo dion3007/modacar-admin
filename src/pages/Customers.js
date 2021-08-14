@@ -97,7 +97,7 @@ export default function Customers() {
     if (customers) {
       customerDataSet(customers);
     }
-  }, []);
+  }, [customers]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

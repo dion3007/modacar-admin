@@ -39,7 +39,7 @@ export default function AddEditUsers() {
           setUsers(newUsers);
         });
     }
-  }, []);
+  }, [act]);
 
   const filteredUsers = users.filter((user) => id === user.id);
 

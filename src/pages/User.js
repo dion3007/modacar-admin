@@ -96,7 +96,7 @@ export default function User() {
         console.log(response.content);
       });
     }
-  }, []);
+  }, [users]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
