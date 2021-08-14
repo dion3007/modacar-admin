@@ -28,7 +28,6 @@ import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 import { userDataSet } from '../utils/cache';
-import antares from '../utils/antares';
 
 // ----------------------------------------------------------------------
 
@@ -92,9 +91,6 @@ export default function User() {
       });
     if (users) {
       userDataSet(users);
-      antares.get('Modacar', 'Raspberry01').then((response) => {
-        console.log(response.content);
-      });
     }
   }, [users]);
 
