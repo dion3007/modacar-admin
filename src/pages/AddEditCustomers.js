@@ -1,5 +1,16 @@
 // material
-import { Card, Stack, Container, Button, Typography, TextField, Grid } from '@material-ui/core';
+import {
+  Card,
+  Stack,
+  Container,
+  Button,
+  Switch,
+  Typography,
+  TextField,
+  Snackbar,
+  Alert,
+  Grid
+} from '@material-ui/core';
 import { useState, useEffect } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -10,6 +21,8 @@ import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
 import firebase from '../firebase';
 import { customerDataGet } from '../utils/cache';
+import MapContainer from '../components/maps/MapContainer';
+import { getLatestData } from '../utils/antares';
 
 const CustomerSchemaValidations = Yup.object().shape({
   name: Yup.string().required('Required'),
@@ -27,9 +40,24 @@ export default function AddEditCustomers() {
   const act = queryString.get('act');
   const id = queryString.get('id');
   const [customers, setCustomers] = useState(customerDataGet() || []);
+  const [activeVechile, setActiveVechile] = useState(true);
+  const [alertState, setAlertState] = useState(false);
+
+  const switchVechileStatus = () => {
+    setActiveVechile(!activeVechile);
+    setAlertState(true);
+  };
+
+  const closeAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAlertState(false);
+  };
 
   useEffect(() => {
     if (act === 'Edit') {
+      getLatestData();
       firebase
         .firestore()
         .collection('customers')
@@ -88,6 +116,19 @@ export default function AddEditCustomers() {
             {act} Customers
           </Typography>
         </Stack>
+        {act === 'Edit' && (
+          <>
+            <Card style={{ marginBottom: 20 }}>
+              <MapContainer />
+            </Card>
+            <Card style={{ marginBottom: 20, padding: 20 }}>
+              <Typography variant="h6">
+                {activeVechile ? 'Set Non-active vechile' : 'Set Active vechile'}
+              </Typography>
+              <Switch checked={activeVechile} onChange={switchVechileStatus} name="checkedA" />
+            </Card>
+          </>
+        )}
         <Card>
           <Scrollbar>
             <Formik
@@ -216,6 +257,11 @@ export default function AddEditCustomers() {
             </Formik>
           </Scrollbar>
         </Card>
+        <Snackbar open={alertState} autoHideDuration={6000} onClose={closeAlert}>
+          <Alert onClose={closeAlert} severity="success">
+            {!activeVechile ? 'Already Non-active' : 'Vechile actived'}
+          </Alert>
+        </Snackbar>
       </Container>
     </Page>
   );
