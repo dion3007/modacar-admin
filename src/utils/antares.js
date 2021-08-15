@@ -5,6 +5,7 @@ export const getLatestData = () => {
   const headerObj = {
     'X-M2M-Origin': 'a736ed57b4509598:8ef02d7f4839ddce',
     'Content-Type': 'application/json;ty=4',
+    'Access-Control-Allow-Origin': '*',
     Accept: 'application/json'
   };
   axios
