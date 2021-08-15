@@ -65,8 +65,6 @@ export default function AddEditUsers() {
     }
   };
 
-  console.log(filteredUsers);
-
   return (
     <Page title="Users | Minimal-UI">
       <Container>

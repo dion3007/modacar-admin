@@ -11,6 +11,7 @@ import {
   Alert,
   Grid
 } from '@material-ui/core';
+import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -22,7 +23,6 @@ import Scrollbar from '../components/Scrollbar';
 import firebase from '../firebase';
 import { customerDataGet } from '../utils/cache';
 import MapContainer from '../components/maps/MapContainer';
-import { getLatestData } from '../utils/antares';
 
 const CustomerSchemaValidations = Yup.object().shape({
   name: Yup.string().required('Required'),
@@ -35,11 +35,13 @@ const CustomerSchemaValidations = Yup.object().shape({
 });
 
 export default function AddEditCustomers() {
+  const URL = 'https://modacar-antares.herokuapp.com/antares-data';
   const location = useLocation();
   const queryString = useQuery(location.search);
   const act = queryString.get('act');
   const id = queryString.get('id');
   const [customers, setCustomers] = useState(customerDataGet() || []);
+  const [antaresData, setAntaresData] = useState();
   const [activeVechile, setActiveVechile] = useState(true);
   const [alertState, setAlertState] = useState(false);
 
@@ -57,7 +59,15 @@ export default function AddEditCustomers() {
 
   useEffect(() => {
     if (act === 'Edit') {
-      getLatestData();
+      axios
+        .get(URL)
+        .then((response) => {
+          const responseData = JSON.parse(response.data.values['m2m:cin'].con);
+          setAntaresData(responseData);
+        })
+        .catch((error) => {
+          console.log(`error ${error}`);
+        });
       firebase
         .firestore()
         .collection('customers')
@@ -106,8 +116,6 @@ export default function AddEditCustomers() {
     }
   };
 
-  console.log(filteredCustomer);
-
   return (
     <Page title="Customers | Minimal-UI">
       <Container>
@@ -119,7 +127,7 @@ export default function AddEditCustomers() {
         {act === 'Edit' && (
           <>
             <Card style={{ marginBottom: 20 }}>
-              <MapContainer />
+              <MapContainer location={antaresData} />
             </Card>
             <Card style={{ marginBottom: 20, padding: 20 }}>
               <Typography variant="h6">
