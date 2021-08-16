@@ -36,6 +36,7 @@ const CustomerSchemaValidations = Yup.object().shape({
 
 export default function AddEditCustomers() {
   const URL = 'https://modacar-antares.herokuapp.com/antares-data';
+  const URLToogleVechile = 'http://172.20.10.8:5000/api/device';
   const location = useLocation();
   const queryString = useQuery(location.search);
   const act = queryString.get('act');
@@ -47,6 +48,16 @@ export default function AddEditCustomers() {
 
   const switchVechileStatus = () => {
     setActiveVechile(!activeVechile);
+    axios
+      .post(URLToogleVechile, {
+        status: !activeVechile
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     setAlertState(true);
   };
 
@@ -64,6 +75,8 @@ export default function AddEditCustomers() {
         .then((response) => {
           const responseData = JSON.parse(response.data.values['m2m:cin'].con);
           setAntaresData(responseData);
+          const parseData = JSON.parse(responseData.data_request);
+          setActiveVechile(parseData.status);
         })
         .catch((error) => {
           console.log(`error ${error}`);
