@@ -36,7 +36,7 @@ const CustomerSchemaValidations = Yup.object().shape({
 
 export default function AddEditCustomers() {
   const URL = 'https://modacar-antares.herokuapp.com/antares-data';
-  const URLToogleVechile = 'http://172.20.10.8:5000/api/device';
+  const URLToogleVechile = 'http://172.20.10.8:5000/api/device/';
   const location = useLocation();
   const queryString = useQuery(location.search);
   const act = queryString.get('act');
@@ -45,21 +45,6 @@ export default function AddEditCustomers() {
   const [antaresData, setAntaresData] = useState();
   const [activeVechile, setActiveVechile] = useState(true);
   const [alertState, setAlertState] = useState(false);
-
-  const switchVechileStatus = () => {
-    setActiveVechile(!activeVechile);
-    axios
-      .post(URLToogleVechile, {
-        status: !activeVechile
-      })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    setAlertState(true);
-  };
 
   const closeAlert = (event, reason) => {
     if (reason === 'clickaway') {
@@ -87,6 +72,21 @@ export default function AddEditCustomers() {
   }, [act]);
 
   const filteredCustomer = customers.filter((customer) => id === customer.idNumber);
+
+  const switchVechileStatus = () => {
+    setActiveVechile(!activeVechile);
+    axios
+      .post(URLToogleVechile + filteredCustomer[0].serial_number, {
+        status: !activeVechile
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setAlertState(true);
+  };
 
   console.log(filteredCustomer[0]);
 
