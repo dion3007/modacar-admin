@@ -69,7 +69,7 @@ export default function AddEditCustomers() {
     if (customers) {
       getAntaaresData();
     }
-  }, [act]);
+  }, [act, customers, getAntaaresData]);
 
   const filteredCustomer = customers.filter((customer) => id === customer.idNumber);
 
