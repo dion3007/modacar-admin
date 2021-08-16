@@ -70,17 +70,6 @@ export default function AddEditCustomers() {
 
   useEffect(() => {
     if (act === 'Edit') {
-      axios
-        .get(URL)
-        .then((response) => {
-          const responseData = JSON.parse(response.data.values['m2m:cin'].con);
-          setAntaresData(responseData);
-          const parseData = JSON.parse(responseData.data_request);
-          setActiveVechile(parseData.status);
-        })
-        .catch((error) => {
-          console.log(`error ${error}`);
-        });
       firebase
         .firestore()
         .collection('customers')
@@ -92,9 +81,30 @@ export default function AddEditCustomers() {
           setCustomers(newCustomers);
         });
     }
+    if (customers) {
+      getAntaaresData();
+    }
   }, [act]);
 
   const filteredCustomer = customers.filter((customer) => id === customer.idNumber);
+
+  console.log(filteredCustomer[0]);
+
+  const getAntaaresData = () => {
+    axios
+      .post(URL, {
+        device: filteredCustomer[0].serial_number
+      })
+      .then((response) => {
+        const responseData = JSON.parse(response.data.values['m2m:cin'].con);
+        setAntaresData(responseData);
+        const parseData = JSON.parse(responseData.data_request);
+        setActiveVechile(parseData.status);
+      })
+      .catch((error) => {
+        console.log(`error ${error}`);
+      });
+  };
 
   const handleSubmit = (values) => {
     if (act === 'Add') {
@@ -109,7 +119,8 @@ export default function AddEditCustomers() {
           password: values.password,
           status: values.status,
           vechile: parseInt(values.vechile, 10),
-          vechile_number: values.vechile_number
+          vechile_number: values.vechile_number,
+          serial_number: values.serial_number
         });
     } else {
       firebase
@@ -124,7 +135,8 @@ export default function AddEditCustomers() {
           password: values?.password,
           status: values?.status,
           vechile: parseInt(values?.vechile, 10),
-          vechile_number: values?.vechile_number
+          vechile_number: values?.vechile_number,
+          serial_number: values.serial_number
         });
     }
   };
@@ -162,7 +174,8 @@ export default function AddEditCustomers() {
                   password: '',
                   status: '',
                   vechile: 1,
-                  vechile_number: ''
+                  vechile_number: '',
+                  serial_number: ''
                 }
               }
               validationSchema={CustomerSchemaValidations}
@@ -209,6 +222,17 @@ export default function AddEditCustomers() {
                         value={values.name}
                         id="name"
                         label="Name"
+                      />
+                      <TextField
+                        required
+                        error={errors?.serial_number && true}
+                        style={{ marginBottom: 15 }}
+                        fullWidth
+                        helperText={errors?.serial_number}
+                        onChange={handleChange}
+                        value={values.serial_number}
+                        id="serial_number"
+                        label="Serial Number"
                       />
                       <TextField
                         required
