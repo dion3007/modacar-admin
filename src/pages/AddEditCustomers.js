@@ -88,8 +88,6 @@ export default function AddEditCustomers() {
     setAlertState(true);
   };
 
-  console.log(filteredCustomer[0]);
-
   const getAntaaresData = () => {
     axios
       .post(URL, {
